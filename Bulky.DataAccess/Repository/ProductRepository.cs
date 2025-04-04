@@ -1,4 +1,5 @@
 ﻿using Bulky.DataAccess.Repository.IRepository;
+using Bulky.Models;
 using BulkyWeb.Data;
 using BulkyWeb.Models;
 using System;
@@ -10,18 +11,22 @@ using System.Threading.Tasks;
 
 namespace Bulky.DataAccess.Repository
 {
-    public class CategoryReposity : Repository<Category>, ICategoryReposity
+    public class ProductRepository : Repository<Product>, IProductRepository
     {
         private ApplicationDbContext _db;
-        public CategoryReposity(ApplicationDbContext db) : base(db)
+        public ProductRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }
 
-
-        void ICategoryReposity.Update(Category category)
+ /*       void IProductRepository.Save()
         {
-            _db.Update(category);
+            _db.SaveChanges();
+        }*/
+
+        void IProductRepository.Update(Product product)
+        {
+            _db.Update(product);
         }
     }
 }
