@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Bulky.Models.ViewModels
 {
-    public class CategoryVM
+    public class ShoppingCartVM
     {
+
+        public IEnumerable<ShoppingCart> ShoppingCartList { get; set; }
+        public double OrderTotal { get; set; }
     }
 }
