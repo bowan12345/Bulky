@@ -1,8 +1,10 @@
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
 using BulkyWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BulkyWeb.Areas.Customer.Controllers
 {
@@ -27,8 +29,39 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
         public IActionResult Details(int productId)
         {
-           Product product = _unitOfWork.productRepository.Get(obj => obj.Id == productId, includeProperties: "Category");
-            return View(product);
+            //Product product = _unitOfWork.productRepository.Get(obj => obj.Id == productId, includeProperties: "Category");
+            ShoppingCart cart = new()
+            {
+
+                Product = _unitOfWork.productRepository.Get(obj => obj.Id == productId, includeProperties: "Category"),
+                Count = 1,
+                ProductId = productId
+            };
+
+            return View(cart);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Details(ShoppingCart cart)
+        {
+            //get login user info
+            var claimsIdentity = (ClaimsIdentity)User.Identity;            //get userId            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;            cart.ApplicationUserId = userId;
+
+            ShoppingCart shoppingCartFromDb = _unitOfWork.shoppingCartRepository.Get(x => x.ApplicationUserId == userId && x.ProductId == cart.ProductId);            if (shoppingCartFromDb == null)            {
+                //add new one
+                _unitOfWork.shoppingCartRepository.Add(cart);
+                _unitOfWork.Save();
+            }            else
+            {
+                //update only increase the count
+                shoppingCartFromDb.Count += cart.Count;
+                _unitOfWork.shoppingCartRepository.Update(shoppingCartFromDb);
+                _unitOfWork.Save();
+            }
+            TempData["success"] = "Shopping Cart Updated Successfully!!!";
+            return RedirectToAction("Index");
+
         }
 
 
