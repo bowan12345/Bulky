@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bulky.Utility
 {
-    public static class OrderStauts
+    public static class OrderStatus
     {
 		public const string StatusPending = "Pending";
 		public const string StatusApproved = "Approved";
