@@ -1,5 +1,6 @@
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
+using Bulky.Utility;
 using BulkyWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,9 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 //add new one
                 _unitOfWork.shoppingCartRepository.Add(cart);
                 _unitOfWork.Save();
+
+                //add shopping cart count into session
+                HttpContext.Session.SetInt32(SessionConstants.SessionCart,_unitOfWork.shoppingCartRepository.GetAll(x=>x.ApplicationUserId == userId).Count());
             }            else
             {
                 //update only increase the count
